@@ -19,7 +19,10 @@ def print_palette_file():
         if file_extension != ".png":
             continue
         with Image.open(os.path.join(INPUT_DIR, image_file)) as im:
-            colors = im.getcolors()
+            colors = im.getcolors(512)
+            if not colors:
+                print(f'{image_file} could not read colors.')
+                continue
             all_colors.extend([c[1] for c in colors])
 
     color_values = list(set(all_colors))
@@ -30,5 +33,6 @@ def print_palette_file():
 
     palette_image = Image.fromarray(palette_colors, mode='RGBA')
     palette_image.save((os.path.join(PALETTE_DIR, 'original.png')))
+
 
 print_palette_file()

@@ -54,11 +54,12 @@ def diff_images(original_palette: Image, recolor_palette: Image):
 def create_layer_images(changes_only=True):
     """
     Perform color conversion swaps on all files in INPUT_DIR
-    :param changes_only: Creates layer images with only changed pixels. Renders complete image is False.
+    :param changes_only: Creates layer images with only changed pixels. Renders complete image if False.
     """
     with Image.open(os.path.join(PALETTE_DIR, 'original.png')) as original:
         with Image.open(os.path.join(PALETTE_DIR, 'recolor.png')) as recolor:
             swaps = diff_images(original, recolor)
+            print(f"Performing {len(swaps)} color swaps.")
 
     for image_file in os.listdir(INPUT_DIR):
         _, file_extension = os.path.splitext(image_file)
@@ -68,7 +69,7 @@ def create_layer_images(changes_only=True):
         with Image.open(os.path.join(INPUT_DIR, image_file)) as im:
             in_data = numpy.array(im)
             if changes_only:
-                out_data = numpy.zeros([39, 39, 4], dtype=numpy.uint8)
+                out_data = numpy.zeros([im.height, im.width, 4], dtype=numpy.uint8)
             else:
                 out_data = numpy.array(im)
 
@@ -81,6 +82,7 @@ def create_layer_images(changes_only=True):
             im2 = Image.fromarray(out_data)
 
             im2.save(os.path.join(OUTPUT_DIR, image_file))
+            print(f"Saved {os.path.join(OUTPUT_DIR, image_file)}")
 
 
-create_layer_images()
+create_layer_images(False)
